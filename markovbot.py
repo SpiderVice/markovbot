@@ -23,12 +23,9 @@ def load_markov_model() -> markovify.NewlineText:
     return markovify.NewlineText(text)
 
 
-logging.info("Registering intents...")
 intents: discord.Intents = discord.Intents.default()
 intents.message_content = True
-logging.info("Setting up client...")
 client = discord.Client(intents=intents)
-logging.info("Loading up markov model...")
 text_model: markovify.NewlineText = load_markov_model()
 
 
