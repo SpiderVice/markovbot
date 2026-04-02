@@ -28,3 +28,7 @@ python3 markovbot.py
 ```
 
 > Keep an eye on logs in case something goes wrong. Startup time is about 1 minute or so, depends on the host.
+
+## Useful
+
+You can read more about Markovify at [Markovify - GitHub](https://github.com/jsvine/markovify)
