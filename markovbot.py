@@ -12,7 +12,7 @@ logging.info("Importing markovify...")
 logging.info("Importing discord")
 logging.info("Importing discord extensions")
 
-TOKEN = os.environ.get("MARKOVBOT_KEY", None)
+TOKEN = os.environ.get("MARKOVBOT_KEY", "")
 
 BOT_CHANNEL = int(os.environ.get("MARKOVBOT_CHANNEL_ID", 0))
 
