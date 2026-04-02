@@ -1,3 +1,5 @@
+from pydoc import text
+
 from discord.abc import PrivateChannel
 from discord.ext import tasks
 import discord
@@ -27,6 +29,7 @@ intents: discord.Intents = discord.Intents.default()
 intents.message_content = True
 client = discord.Client(intents=intents)
 text_model: markovify.NewlineText = load_markov_model()
+text_model.compile()
 
 
 @tasks.loop(minutes=60)
@@ -74,5 +77,4 @@ async def on_message(message: discord.Message) -> None:
     logging.info("Sending generated response!")
     await message.channel.send(generated_response)
 
-logging.info("Running client!")
 client.run(TOKEN, log_handler=handler, root_logger=True)
