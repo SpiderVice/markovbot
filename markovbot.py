@@ -8,8 +8,8 @@ import os
 handler = logging.FileHandler(
     filename='discord.log', encoding='utf-8', mode='w')
 
-TOKEN = os.environ.get("MARKOVBOT_KEY", "")
-
+# Token for the bot, not to be confused with the account token
+TOKEN = os.environ.get("MARKOVBOT_TOKEN", "")
 BOT_CHANNEL = int(os.environ.get("MARKOVBOT_CHANNEL_ID", 0))
 
 
