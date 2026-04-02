@@ -5,6 +5,8 @@
 - Have a Discord data dump copied to the root directory of this project. (Messages folder)
 - Have run the dataset.py script to convert the JSON into a TXT which will be read by markovify.
 - Have environment variables set for the Discord bot token and the target channel ID.
+    1. `MARKOVBOT_TOKEN`: The token for your Discord bot.
+    2. `MARKOVBOT_CHANNEL_ID`: The ID of the Discord channel where the bot will post messages.
 
 ## Usage
 
