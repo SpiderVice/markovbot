@@ -1,5 +1,3 @@
-from pydoc import text
-
 from discord.abc import PrivateChannel
 from discord.ext import tasks
 import discord
