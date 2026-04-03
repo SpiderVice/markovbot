@@ -59,6 +59,7 @@ def random_with_lookup(look_up_term) -> str:
         generated_message = text_model.make_sentence(tries=10) or ""
         if look_up_term in generated_message:
             final_message = generated_message
+            tries += 1
 
     return final_message
 
