@@ -53,14 +53,18 @@ async def on_ready() -> None:
 
 def random_with_lookup(look_up_term) -> str:
     final_message = ""
-
+    logging.info(f"Generating random message with lookup term: {look_up_term}")
     tries = 0
     while tries < TRY_COUNT and final_message != "":
+        logging.info(
+            f"Try {tries + 1} of {TRY_COUNT} for term: {look_up_term}")
         generated_message = text_model.make_sentence(tries=10) or ""
         if look_up_term in generated_message:
             final_message = generated_message
             tries += 1
 
+    logging.info(
+        f"Final message generated with lookup term {look_up_term}: {final_message}")
     return final_message
 
 
@@ -83,8 +87,12 @@ async def on_message(message: discord.Message) -> None:
     stripped_message = ""
 
     if message.content.startswith("!randomtalk"):
+        logging.info("Message starts with !randomtalk")
+        isRandomTalk = True
         stripped_message = message.content.replace("!randomtalk", "").lstrip()
     if message.content.startswith("!talk"):
+        logging.info("Message starts with !talk")
+        isTalk = True
         stripped_message: str = message.content.replace("!talk", "").lstrip()
 
     # TODO: DRY principle
