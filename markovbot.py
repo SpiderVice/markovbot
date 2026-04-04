@@ -6,6 +6,7 @@ import os
 import asyncio
 import time
 
+import utils
 import botconfig
 import model_manager
 
@@ -53,8 +54,6 @@ def random_with_lookup(look_up_term: str) -> str:
     return final_message
 
 
-client: discord.Client = load_discord_client()
-
 # Client code
 
 client: discord.Client = utils.load_discord_client()
@@ -98,18 +97,15 @@ async def on_message(message: discord.Message) -> None:
     generated_response = ""
 
     try:
-        if isTalk:
-            if len(terms) > botconfig.STATE_SIZE - 1:
-                await message.channel.send(f"OOC: You cannot have more than {botconfig.STATE_SIZE - 1} words after the !talk command. Try again!")
+        if len(terms) > botconfig.STATE_SIZE - 1:
+            await message.channel.send(f"OOC: You cannot have more than {botconfig.STATE_SIZE - 1} words after the {cmd} command. Try again!")
 
+        if isTalk:
             generated_response: str = text_model.make_sentence_with_start(
                 terms_str, tries=50
             ) or f"OOC: I tried {botconfig.TRY_COUNT} times and couldn't generate a message with {terms_str}. Try another term?"
         elif isRandomTalk:
-            if len(terms) > botconfig.STATE_SIZE - 1:
-                await message.channel.send(f"OOC: You cannot have more than {botconfig.STATE_SIZE - 1} words after the !randomtalk command. Try again!")
-
-                generated_response: str = await asyncio.to_thread(random_with_lookup, terms_str) or f"OOC: I tried to generate a random message with {terms_str} but failed. Try another term?"
+            generated_response: str = await asyncio.to_thread(random_with_lookup, terms_str) or f"OOC: I tried to generate a random message with {terms_str} but failed. Try another term?"
         else:
             generated_response = "OOC: Unrecognized command. Please use !talk or !randomtalk followed by a term to generate a message."
     except Exception as e:
