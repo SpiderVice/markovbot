@@ -101,42 +101,43 @@ async def on_message(message: discord.Message) -> None:
     if message.content == "" or message.author == client.user or not message.content.startswith("!"):
         return
 
-    is_correct_channel: bool = message.channel.id == botconfig.BOT_CHANNEL
-    is_correct_forum: bool = getattr(
-        message.channel, "parent_id", None) == botconfig.BOT_CHANNEL
-
-    if not is_correct_channel and not is_correct_forum:
-        logging.error(
-            f"Message received in a channel that is not the bot channel. Message channel ID: {message.channel.id}, Bot channel ID: {botconfig.BOT_CHANNEL}")
+    if not is_valid_channel(message):
         return
 
-    isTalk = message.content.startswith("!talk")
-    isRandomTalk = message.content.startswith("!randomtalk")
+    split_message: list[str] = message.content.rstrip().split(" ")
+    cmd: str = split_message[0] or ""
+    terms: list[str] = split_message[1:] if len(split_message) > 1 else []
+    terms_str: str = " ".join(terms)
+
+    if cmd not in ["!talk", "!randomtalk"]:
+        logging.info(
+            f"Message does not start with a recognized command. Message content: {message.content}")
+        await message.channel.send(f"OOC: Unrecognized command {cmd}. Please use !talk or !randomtalk followed by a term to generate a message.")
+        return  # Not sure why I need this return
+
+    isTalk: bool = cmd == "!talk"
+    isRandomTalk: bool = cmd == "!randomtalk"
     generated_response = ""
 
-    if isTalk or isRandomTalk:
-        cmd = "!randomtalk" if isRandomTalk else "!talk"
-        stripped_message = message.content.replace(cmd, "").lstrip()
-
+    try:
         if isTalk:
-            if len(stripped_message.split(" ")) > botconfig.STATE_SIZE:
-                await message.channel.send("OOC: You cannot have more than 2 words after the !talk command. Try again!")
+            if len(terms) > botconfig.STATE_SIZE - 1:
+                await message.channel.send(f"OOC: You cannot have more than {botconfig.STATE_SIZE - 1} words after the !talk command. Try again!")
 
-            try:
-                generated_response: str = text_model.make_sentence_with_start(stripped_message.replace(
-                    "!talk", "").rstrip(), tries=50) or f"OOC: I tried {botconfig.TRY_COUNT} times and couldn't generate a message with {stripped_message}. Try another term?"
-            except Exception as e:
-                generated_response = f"OOC: It may not have been possible to find a chain starting with {stripped_message}.\nError: {repr(e)}"
-        if isRandomTalk:
-            if len(stripped_message.split(" ")) > botconfig.STATE_SIZE - 1:
-                await message.channel.send("OOC: You cannot have more than 1 word after the !randomtalk command. Try again!")
+            generated_response: str = text_model.make_sentence_with_start(
+                terms_str, tries=50
+            ) or f"OOC: I tried {botconfig.TRY_COUNT} times and couldn't generate a message with {terms_str}. Try another term?"
+        elif isRandomTalk:
+            if len(terms) > botconfig.STATE_SIZE - 1:
+                await message.channel.send(f"OOC: You cannot have more than {botconfig.STATE_SIZE - 1} words after the !randomtalk command. Try again!")
 
-            try:
-                generated_response: str = await asyncio.to_thread(random_with_lookup, stripped_message) or f"OOC: I tried to generate a random message with {stripped_message} but failed. Try another term?"
-            except Exception as e:
-                generated_response = f"OOC: It may not have been possible to find a message containing {stripped_message} as part of the generated random message.\nError: {repr(e)}"
+                generated_response: str = await asyncio.to_thread(random_with_lookup, terms_str) or f"OOC: I tried to generate a random message with {terms_str} but failed. Try another term?"
+        else:
+            generated_response = "OOC: Unrecognized command. Please use !talk or !randomtalk followed by a term to generate a message."
+    except Exception as e:
+        logging.error(f"Error generating message: {e}")
+        generated_response = f"OOC: An error occurred while generating the message. Details: {repr(e)}."
 
-    if generated_response != "" and (isTalk or isRandomTalk):
-        await message.channel.send(generated_response)
+    await message.channel.send(generated_response)
 
 client.run(botconfig.TOKEN, log_handler=handler, root_logger=True)
