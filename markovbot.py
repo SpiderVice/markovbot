@@ -135,7 +135,7 @@ async def on_message(message: discord.Message) -> None:
                 await message.channel.send("OOC: You cannot have more than 1 word after the !randomtalk command. Try again!")
 
             try:
-                generated_response: str = await asyncio.to_thread(random_with_lookup, stripped_message) or f"OOC: I tried {botconfig.TRY_COUNT} times and couldn't generate a random message with {stripped_message}. Try another term?"
+                generated_response: str = await asyncio.to_thread(random_with_lookup, stripped_message) or f"OOC: I tried to generate a random message with {stripped_message} but failed. Try another term?"
             except Exception as e:
                 generated_response = f"OOC: It may not have been possible to find a message containing {stripped_message} as part of the generated random message.\nError: {repr(e)}"
 
