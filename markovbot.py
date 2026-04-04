@@ -55,13 +55,11 @@ def random_with_lookup(look_up_term) -> str:
     final_message = ""
     logging.info(f"Generating random message with lookup term: {look_up_term}")
     tries = 0
-    while tries < TRY_COUNT and final_message != "":
-        logging.info(
-            f"Try {tries + 1} of {TRY_COUNT} for term: {look_up_term}")
+    while tries < TRY_COUNT * 10 and final_message == "":
         generated_message = text_model.make_sentence(tries=10) or ""
         if look_up_term in generated_message:
             final_message = generated_message
-            tries += 1
+        tries += 1
 
     logging.info(
         f"Final message generated with lookup term {look_up_term}: {final_message}")
