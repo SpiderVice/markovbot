@@ -70,18 +70,6 @@ def random_with_lookup(look_up_term: str) -> str:
 
     return final_message
 
-# Tasks and stuff
-
-
-@tasks.loop(minutes=60)
-async def scout_thinks() -> None:
-    channel: discord.VoiceChannel | discord.StageChannel | discord.ForumChannel | discord.TextChannel | discord.CategoryChannel | discord.Thread | PrivateChannel | None = client.get_channel(
-        botconfig.BOT_CHANNEL)
-    if channel and isinstance(channel, discord.abc.Messageable):
-        generated_response = text_model.make_sentence(
-            tries=botconfig.TRY_COUNT) or f"OOC: I tried {botconfig.TRY_COUNT} but I was unable to generate a message for some reason..."
-        message = f"BS thinks: *{generated_response}*.\n*Next message will be sent at: {datetime.now() + timedelta(hours=1)} UTC-3*"
-        await channel.send(message)
 
 client: discord.Client = load_discord_client()
 
@@ -91,8 +79,8 @@ client: discord.Client = load_discord_client()
 @client.event
 async def on_ready() -> None:
     logging.info(f"Logged in as {client.user}")
-    if not scout_thinks.is_running():
-        scout_thinks.start()
+
+
 
 
 @client.event
