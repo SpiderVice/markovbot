@@ -6,6 +6,7 @@ import discord
 import markovify
 import logging
 import os
+import asyncio
 
 # You may not want to log it to a file, fyi
 handler = logging.FileHandler(
@@ -107,12 +108,11 @@ async def on_message(message: discord.Message) -> None:
             except Exception as e:
                 generated_response = f"OOC: It may not have been possible to find a chain starting with {stripped_message}.\nError: {repr(e)}"
         if isRandomTalk:
-            if len(stripped_message.split(" ")) > 1:
+            if len(stripped_message.split(" ")) > STATE_SIZE - 1:
                 await message.channel.send("OOC: You cannot have more than 1 word after the !randomtalk command. Try again!")
 
             try:
-                generated_response: str = random_with_lookup(
-                    stripped_message) or f"OOC: I tried {TRY_COUNT} times and couldn't generate a random message with {stripped_message}. Try another term?"
+                generated_response: str = await asyncio.to_thread(random_with_lookup, stripped_message) or f"OOC: I tried {TRY_COUNT} times and couldn't generate a random message with {stripped_message}. Try another term?"
             except Exception as e:
                 generated_response = f"OOC: It may not have been possible to find a message containing {stripped_message} as part of the generated random message.\nError: {repr(e)}"
 
