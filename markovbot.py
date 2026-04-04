@@ -110,7 +110,7 @@ async def on_message(message: discord.Message) -> None:
         message.channel, "parent_id", None) == botconfig.BOT_CHANNEL
     if not is_correct_channel and not is_correct_forum:
         logging.error(
-            f"Message received in a channel that is not the bot channel. Message channel ID: {message.channel.id}, Bot channel ID: {BOT_CHANNEL}")
+            f"Message received in a channel that is not the bot channel. Message channel ID: {message.channel.id}, Bot channel ID: {botconfig.BOT_CHANNEL}")
         return
 
     isTalk = message.content.startswith("!talk")
