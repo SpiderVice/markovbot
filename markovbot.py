@@ -15,6 +15,7 @@ handler = logging.FileHandler(
 TOKEN = os.environ.get("MARKOVBOT_TOKEN", "")
 BOT_CHANNEL = int(os.environ.get("MARKOVBOT_CHANNEL_ID", 0))
 TRY_COUNT = 50
+STATE_SIZE = 3
 
 
 def load_markov_model() -> markovify.NewlineText:
@@ -23,7 +24,7 @@ def load_markov_model() -> markovify.NewlineText:
         text: str = f.read()
 
     logging.info("Creating NewlineText. This may take a while")
-    return markovify.NewlineText(text, well_formed=False)
+    return markovify.NewlineText(text, well_formed=False, state_size=STATE_SIZE)
 
 
 intents: discord.Intents = discord.Intents.default()
@@ -88,6 +89,7 @@ async def on_message(message: discord.Message) -> None:
         logging.info("Message starts with !randomtalk")
         isRandomTalk = True
         stripped_message = message.content.replace("!randomtalk", "").lstrip()
+
     if message.content.startswith("!talk"):
         logging.info("Message starts with !talk")
         isTalk = True
@@ -96,7 +98,7 @@ async def on_message(message: discord.Message) -> None:
     # TODO: DRY principle
     if isTalk or isRandomTalk:
         if isTalk:
-            if len(stripped_message.split(" ")) > 2:
+            if len(stripped_message.split(" ")) > STATE_SIZE:
                 await message.channel.send("OOC: You cannot have more than 2 words after the !talk command. Try again!")
 
             try:
