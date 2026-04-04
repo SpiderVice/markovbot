@@ -57,15 +57,11 @@ def random_with_lookup(look_up_term) -> str:
         generated_message = text_model.make_sentence(tries=10) or ""
         if look_up_term in generated_message:
             final_message = generated_message
+            end = time.time()
+            time_taken = end - start
+            final_message += f"\n\n*Note: It took {tries} tries and {time_taken:.4f} seconds to generate this message with the term '{look_up_term}'*"
+
         tries += 1
-    end = time.time()
-
-    time_taken = end - start
-
-    logging.info(
-        f"Time taken to generate message: {time_taken:.4f} seconds with {tries} tries.")
-
-    final_message += f"\n\n*Note: It took {tries} tries and {time_taken:.4f} seconds to generate this message with the term '{look_up_term}'*"
 
     logging.info(
         f"Final message generated with lookup term {look_up_term}: {final_message}")
