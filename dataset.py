@@ -25,7 +25,9 @@ def main() -> None:
     with open("messages.txt", "w", encoding="utf-8") as f:
         if messages != []:
             for message in tqdm(messages, desc="Writing messages to file"):
-                f.write(message + "\n")
+                message = message.rstrip()
+                if message != "":
+                    f.write(message + "\n")
         else:
             raise ValueError(
                 "You must have a non-empty list of messages in order for markovbot to work.")
