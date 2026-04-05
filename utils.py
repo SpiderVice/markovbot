@@ -12,7 +12,7 @@ def load_discord_client() -> discord.Client:
 
 def load_markov_model() -> markovify.NewlineText:
     logging.info("Loading messages.txt...")
-    with open("messages.txt", encoding="utf-8") as f:
+    with open("data/messages.txt", encoding="utf-8") as f:
         text: str = f.read()
 
     logging.info("Creating NewlineText. This may take a while")

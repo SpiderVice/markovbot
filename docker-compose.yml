@@ -9,7 +9,8 @@ services:
             #user: "1001:1001"
 
             volumes:
-                  - /home/dockeruser/containers/markovbot/messages.txt:/markovbot/messages.txt
+                  - /home/dockeruser/containers/markovbot/data:/markovbot/data
+                  - /home/dockeruser/containers/markovbot/logs:/markovbot/logs
 
                   # This technically allows you to make changes to the Python code and simply restart the container,
                   # because the mount is overwriting what was built in the image with the local directory. Think of

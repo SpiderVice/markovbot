@@ -3,6 +3,8 @@
 *.txt
 *.log
 Messages
+data
+logs
 
 # development directories and files
 *venv

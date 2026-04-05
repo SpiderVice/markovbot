@@ -12,11 +12,11 @@ import model_manager
 
 # You may not want to log it to a file, fyi
 handler = logging.FileHandler(
-    filename='discord.log', encoding='utf-8', mode='w')
+    filename='logs/discord.log', encoding='utf-8', mode='w')
 
 
 def try_load_model() -> markovify.NewlineText:
-    if not os.path.exists("markov_model.json"):
+    if not os.path.exists("data/markov_model.json"):
         logging.info(
             "markov_model.json not found. Loading messages.txt and creating model...")
         text_model: markovify.NewlineText = utils.load_markov_model()
