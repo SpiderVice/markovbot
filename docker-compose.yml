@@ -19,13 +19,13 @@ services:
                   # it as a developer/test mode.
                   # - /home/dockeruser/containers/markovbot:/markovbot/ 
 
-            environment:
+            # environment:
                   #- PUID=1001
                   #- PGID=1001
 
                   # Don't forget to set your tokens here, or in an env file.
-                  - MARKOVBOT_TOKEN=
-                  - MARKOVBOT_CHANNEL_ID=
-            # env_file: .env
+                  # - MARKOVBOT_TOKEN=
+                  # - MARKOVBOT_CHANNEL_ID=
+            env_file: .env
 
             restart: unless-stopped
