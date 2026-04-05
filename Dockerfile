@@ -4,10 +4,12 @@
 ARG PYTHON_VERSION=3.14
 ARG UV_VERSION=0.11.3
 
+FROM ghcr.io/astral-sh/uv:${UV_VERSION} AS uv
+
 # Compile Stage
 FROM python:${PYTHON_VERSION}-slim AS BUILD
 
-COPY --from=ghcr.io/astral-sh/uv:${UV_VERSION} /uv /uvx /bin
+COPY --from=uv /uv /uvx /bin
 
 RUN mkdir /markovbot
 WORKDIR /markovbot
