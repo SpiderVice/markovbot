@@ -21,7 +21,7 @@ def try_load_model() -> markovify.NewlineText:
     if not os.path.exists("data/markov_model.json"):
         logging.info(
             "markov_model.json not found. Loading messages.txt and creating model...")
-        text_model: markovify.NewlineText = utils.load_markov_model()
+        text_model: markovify.NewlineText = model_manager.build_markov_model()
         logging.info("Saving model to markov_model.json...")
         model_manager.save_model(botconfig.STATE_SIZE)
         return text_model
@@ -31,6 +31,7 @@ def try_load_model() -> markovify.NewlineText:
 
 
 text_model: markovify.NewlineText = try_load_model()
+text_model.compile(inplace=True)  # Compile the model for faster generation
 
 
 def random_with_lookup(look_up_term: str) -> str:
