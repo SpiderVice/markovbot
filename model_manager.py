@@ -2,7 +2,7 @@ import logging
 
 import markovify
 
-import botconfig as botconfig
+import botconfig
 
 
 def save_model(state_size: int) -> None:
