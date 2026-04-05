@@ -1,5 +1,5 @@
 services:
-      changedetection:
+      markovbot:
             image: ghcr.io/bscout9956/markovbot:main
             container_name: markovbot
 
