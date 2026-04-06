@@ -1,3 +1,4 @@
 tqdm
 markovify
 discord.py
+loguru
