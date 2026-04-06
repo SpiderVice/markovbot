@@ -1,6 +1,4 @@
 
-import gc
-
 import discord
 import markovify
 import logging
@@ -37,18 +35,24 @@ text_model.compile(inplace=True)  # Compile the model for faster generation
 def random_with_lookup(look_up_term: str) -> str:
     final_message = ""
     logging.info(f"Generating random message with lookup term: {look_up_term}")
+    look_up_lower = look_up_term.lower()
     tries = 0
-    max_tries = botconfig.TRY_COUNT * 10
+    max_tries = botconfig.TRY_COUNT
     start: float = time.time()
 
     while tries < max_tries and final_message == "":
-        generated_message: str = text_model.make_sentence(tries=10) or ""
-        if look_up_term.lower() in generated_message.lower():
-            final_message = generated_message
+        # Generate 10 sentences per try for better efficiency
+        for _ in range(10):
+            generated_message: str = text_model.make_sentence(tries=5) or ""
+            if look_up_lower in generated_message.lower():
+                final_message = generated_message
+                break
+        
+        if final_message:
             end: float = time.time()
             time_taken: float = end - start
-            final_message += f"\n\n*Note: It took {tries} tries and {time_taken:.4f} seconds to generate this message with the term '{look_up_term}'*"
-
+            final_message += f"\n\n*Note: It took {tries * 10} attempts and {time_taken:.4f} seconds to generate this message with the term '{look_up_term}'*"
+        
         tries += 1
 
     return final_message
@@ -63,7 +67,6 @@ async def status_check() -> None:
     bot_channel = client.get_channel(botconfig.BOT_CHANNEL)
     if bot_channel and isinstance(bot_channel, discord.TextChannel):
         await bot_channel.send(f"## The bot is now **online**!\n ### Settings are 'TRY_COUNT': {botconfig.TRY_COUNT}, 'STATE_SIZE': {botconfig.STATE_SIZE}.")
-        gc.collect()
 
 
 @client.event
@@ -100,7 +103,6 @@ async def on_message(message: discord.Message) -> None:
     try:
         if len(terms) > botconfig.STATE_SIZE - 1:
             await message.channel.send(f"OOC: You cannot have more than {botconfig.STATE_SIZE - 1} words after the {cmd} command. Try again!")
-            gc.collect()
 
         if isTalk:
             generated_response: str = text_model.make_sentence_with_start(
@@ -118,7 +120,6 @@ async def on_message(message: discord.Message) -> None:
         generated_response = f"OOC: I couldn't generate a message with the term '{terms_str}'. Try another term?"
 
     await message.channel.send(generated_response)
-    gc.collect()
 
 
 client.run(botconfig.TOKEN, log_handler=handler, root_logger=True)
