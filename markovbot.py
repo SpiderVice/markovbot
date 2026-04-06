@@ -1,32 +1,32 @@
 
+import asyncio
 import gc
+import os
+import time
 
 import discord
 import markovify
-from loguru import logger as logging
-import os
-import asyncio
-import time
+from loguru import logger
 
-import utils
 import botconfig
 import model_manager
+import utils
 
 # You may not want to log it to a file, fyi
-#handler = logging.FileHandler(
+# handler = logging.FileHandler(
 #    filename='logs/discord.log', encoding='utf-8', mode='w')
 
 
 def try_load_model() -> markovify.NewlineText:
     if not os.path.exists("data/markov_model.json"):
-        logging.info(
+        logger.info(
             "markov_model.json not found. Loading messages.txt and creating model...")
         text_model: markovify.NewlineText = model_manager.build_markov_model()
-        logging.info("Saving model to markov_model.json...")
+        logger.info("Saving model to markov_model.json...")
         # model_manager.save_model(botconfig.STATE_SIZE)
         return text_model
     else:
-        logging.info("markov_model.json found. Loading model...")
+        logger.info("markov_model.json found. Loading model...")
         return model_manager.load_model()
 
 
@@ -36,7 +36,7 @@ text_model.compile(inplace=True)  # Compile the model for faster generation
 
 def random_with_lookup(look_up_term: str) -> str:
     final_message = ""
-    logging.info(f"Generating random message with lookup term: {look_up_term}")
+    logger.info(f"Generating random message with lookup term: {look_up_term}")
     tries = 0
     max_tries = botconfig.TRY_COUNT * 10
     start: float = time.time()
@@ -68,13 +68,13 @@ async def status_check() -> None:
 
 @client.event
 async def on_ready() -> None:
-    logging.info(f"Logged in as {client.user}")
+    logger.info(f"Logged in as {client.user}")
     await status_check()
 
 
 @client.event
 async def on_message(message: discord.Message) -> None:
-    logging.info(f"Message received from {message.author}.")
+    logger.info(f"Message received from {message.author}.")
 
     if message.content == "" or message.author == client.user or not message.content.startswith("!"):
         return
@@ -88,7 +88,7 @@ async def on_message(message: discord.Message) -> None:
     terms_str: str = " ".join(terms)
 
     if cmd not in ["!talk", "!randomtalk"]:
-        logging.info(
+        logger.info(
             f"Message does not start with a recognized command. Message content: {message.content}")
         await message.channel.send(f"OOC: Unrecognized command {cmd}. Please use !talk or !randomtalk followed by a term to generate a message.")
         return  # Not sure why I need this return
@@ -111,7 +111,7 @@ async def on_message(message: discord.Message) -> None:
         else:
             generated_response = "OOC: Unrecognized command. Please use !talk or !randomtalk followed by a term to generate a message."
     except Exception as e:
-        logging.error(f"Error generating message: {e}")
+        logger.error(f"Error generating message: {e}")
         generated_response = f"OOC: An error occurred while generating the message. Details: {repr(e)}."
 
     if generated_response == "":
