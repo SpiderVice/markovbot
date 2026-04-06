@@ -12,10 +12,10 @@ def save_model(state_size: int) -> None:
     with open("data/messages.txt", encoding="utf-8") as f:
         text: str = f.read()
 
-        # Use well_formed=True for grammatically correct sentences
+
         text_model = markovify.NewlineText(
             text, 
-            well_formed=True,  # Changed from False for better accuracy
+            well_formed=False,
             state_size=state_size
         )
         text_model.compile(inplace=True)
