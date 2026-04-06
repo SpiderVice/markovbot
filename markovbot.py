@@ -1,10 +1,10 @@
-
 import discord
 import markovify
 import logging
 import os
 import asyncio
 import time
+from concurrent.futures import ThreadPoolExecutor
 
 import utils
 import botconfig
@@ -14,6 +14,12 @@ import model_manager
 handler = logging.FileHandler(
     filename='logs/discord.log', encoding='utf-8', mode='w')
 
+# Global executor
+executor = ThreadPoolExecutor(max_workers=2)
+
+async def async_load_model():
+    """Load model in background thread."""
+    return await asyncio.to_thread(try_load_model)
 
 def try_load_model() -> markovify.NewlineText:
     if not os.path.exists("data/markov_model.json"):
@@ -27,10 +33,13 @@ def try_load_model() -> markovify.NewlineText:
         logging.info("markov_model.json found. Loading model...")
         return model_manager.load_model()
 
-
 text_model: markovify.NewlineText = try_load_model()
 text_model.compile(inplace=True)  # Compile the model for faster generation
 
+async def generate_with_lookup_async(term: str) -> str:
+    """Generate message with lookup term in thread pool."""
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(executor, random_with_lookup, term)
 
 def random_with_lookup(look_up_term: str) -> str:
     """
@@ -71,7 +80,6 @@ def random_with_lookup(look_up_term: str) -> str:
     
     return final_message
 
-
 def make_random_sentence() -> str:
     """Generate a random sentence from the model."""
     try:
@@ -84,11 +92,9 @@ def make_random_sentence() -> str:
         logging.error(f"Error generating sentence: {e}")
         return "An error occurred while generating a message."
 
-
 # Client code
 
 client: discord.Client = utils.load_discord_client()
-
 
 async def status_check() -> None:
     bot_channel = client.get_channel(botconfig.BOT_CHANNEL)
@@ -100,12 +106,17 @@ async def status_check() -> None:
             f"MAX_OVERLAP_RATIO={botconfig.MAX_OVERLAP_RATIO}"
         )
 
-
 @client.event
 async def on_ready() -> None:
+    global text_model
+    if not hasattr(on_ready, 'model_loaded'):
+        logging.info("Loading model asynchronously...")
+        text_model = await async_load_model()
+        text_model.compile(inplace=True)
+        on_ready.model_loaded = True
+    
     logging.info(f"Logged in as {client.user}")
     await status_check()
-
 
 @client.event
 async def on_message(message: discord.Message) -> None:
@@ -167,6 +178,5 @@ async def on_message(message: discord.Message) -> None:
         generated_response = f"OOC: I couldn't generate a message with the term '{terms_str}'. Try another term?"
 
     await message.channel.send(generated_response)
-
 
 client.run(botconfig.TOKEN, log_handler=handler, root_logger=True)
