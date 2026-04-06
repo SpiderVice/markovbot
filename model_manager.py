@@ -58,4 +58,5 @@ def build_markov_model() -> markovify.NewlineText:
         raise
 
     logging.info("Creating NewlineText. This may take a while")
-    return markovify.NewlineText(text, well_formed=False, state_size=botconfig.STATE_SIZE)
+    # Add retain_original=False to save memory by not storing the original text
+    return markovify.NewlineText(text, well_formed=False, state_size=botconfig.STATE_SIZE, retain_original=False)
