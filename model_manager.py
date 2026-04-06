@@ -1,5 +1,6 @@
 import logging
 import os
+import json
 
 import markovify
 
@@ -13,21 +14,16 @@ def save_model(state_size: int) -> None:
         text_model = markovify.NewlineText(
             text, well_formed=False, state_size=state_size)
         text_model.compile(inplace=True)
-        model_json: str = text_model.to_json()
-        try:
-            with open("data/markov_model.json", "w", encoding="utf-8") as model_file:
-                model_file.write(model_json)
-        except PermissionError as e:
-            logging.error(
-                f"Permission error while trying to save the model: {repr(e)}")
-            logging.info(
-                f"Permission is {os.access('data/markov_model.json', os.W_OK)}")
+
+        # Use json.dump instead of to_json() + write
+        with open("data/markov_model.json", "w", encoding="utf-8") as model_file:
+            json.dump(text_model.to_json(), model_file)
 
 
 def load_model() -> markovify.NewlineText:
     try:
         with open("data/markov_model.json", "r", encoding="utf-8") as model_file:
-            model_json: str = model_file.read()
+            model_json = json.load(model_file)  # Streams the JSON
             return markovify.NewlineText.from_json(model_json)
     except FileNotFoundError:
         logging.error(
@@ -58,5 +54,4 @@ def build_markov_model() -> markovify.NewlineText:
         raise
 
     logging.info("Creating NewlineText. This may take a while")
-    # Add retain_original=False to save memory by not storing the original text
-    return markovify.NewlineText(text, well_formed=False, state_size=botconfig.STATE_SIZE, retain_original=False)
+    return markovify.NewlineText(text, well_formed=False, state_size=botconfig.STATE_SIZE)
