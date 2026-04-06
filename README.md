@@ -8,29 +8,64 @@
     1. `MARKOVBOT_TOKEN`: The token for your Discord bot.
     2. `MARKOVBOT_CHANNEL_ID`: The ID of the Discord channel where the bot will post messages.
 
-## Usage
+## Usage (Locally)
 
-1. Create a python virtual environment and activate it.
+### Install UV
 
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
-
-2. Install the necessary packages.
+#### Linux (Curl)
 
 ```bash
-pip install -r requirements.txt
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-3. Run the main script. (PS: Optionally attach it to a tmux instance for convenience)
+#### Linux (Wget)
 
 ```bash
-python3 markovbot.py
+wget -qO- https://astral.sh/uv/install.sh | sh
 ```
 
-> Keep an eye on logs in case something goes wrong. Startup time is about 1 minute or so, depends on the host.
+#### Windows (Winget, Preferred)
 
-## Useful
+```powershell
+winget install --id=astral-sh.uv  -e
+```
+
+#### Windows (PowerShell)
+
+> This bypasses the execution policy. Be sure that you understand the risks associated with this command before running it.
+
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+### Synchronize the environment
+
+```bash
+uv sync
+```
+
+### Run the bot
+
+```bash
+uv run markovbot.py
+```
+
+> Keep an eye on logs in case something goes wrong. Startup time may take up to 5 minutes, be patient and check the logs.
+
+## Usage (Docker)
+
+### Build the Docker image
+
+```bash
+docker build -t markovbot .
+```
+
+### Run the Docker container
+
+```bash
+docker run -d --name markovbot -e MARKOVBOT_TOKEN=your_token_here -e MARKOVBOT_CHANNEL_ID=your_channel_id_here markovbot
+```
+
+## Useful Tidbits
 
 You can read more about Markovify at [Markovify - GitHub](https://github.com/jsvine/markovify)
