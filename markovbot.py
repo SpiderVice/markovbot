@@ -3,7 +3,7 @@ import gc
 
 import discord
 import markovify
-import logging
+from loguru import logger as logging
 import os
 import asyncio
 import time
@@ -13,8 +13,8 @@ import botconfig
 import model_manager
 
 # You may not want to log it to a file, fyi
-handler = logging.FileHandler(
-    filename='logs/discord.log', encoding='utf-8', mode='w')
+#handler = logging.FileHandler(
+#    filename='logs/discord.log', encoding='utf-8', mode='w')
 
 
 def try_load_model() -> markovify.NewlineText:
@@ -121,4 +121,4 @@ async def on_message(message: discord.Message) -> None:
     gc.collect()
 
 
-client.run(botconfig.TOKEN, log_handler=handler, root_logger=True)
+client.run(botconfig.TOKEN)
