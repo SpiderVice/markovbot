@@ -1,8 +1,4 @@
-# Based on https://depot.dev/docs/container-builds/optimal-dockerfiles/python-uv-dockerfile
-# This is a multistage setup.
-
 ARG PYTHON_VERSION=3.14
-ARG UV_VERSION=0.11.3
 
 FROM python:${PYTHON_VERSION}-alpine
 
@@ -17,6 +13,7 @@ WORKDIR /markovbot
 COPY . /markovbot/
 RUN uv sync --frozen --no-dev
 
+# Enable the .venv so the entrypoint can know what it needs
 ENV PATH="/markovbot/.venv/bin:$PATH"
 
 ENTRYPOINT ["python3", "markovbot.py"]
