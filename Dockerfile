@@ -28,7 +28,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev
 
 # Runtime Stage
-FROM python:${PYTHON_VERSION} AS runtime
+FROM python:${PYTHON_VERSION}-slim AS runtime
 
 ENV PATH="/markovbot/.venv/bin:$PATH"
 
