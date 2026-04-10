@@ -15,7 +15,7 @@ WORKDIR /markovbot
 
 # This copies the full app (.py files and whatnot) and installs the project
 COPY . /markovbot/
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-dev
+ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
+RUN uv sync --frozen --no-dev
 
 ENTRYPOINT ["python3", "markovbot.py"]
