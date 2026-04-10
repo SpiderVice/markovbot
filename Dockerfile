@@ -3,7 +3,7 @@ ARG PYTHON_VERSION=3.14
 FROM python:${PYTHON_VERSION}-alpine
 
 # Set up the Alpine edge repo so UV is up to date
-echo "@edge https://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
+RUN echo "@edge https://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
 
 # Install dependencies (UV)
 RUN apk add uv@edge
