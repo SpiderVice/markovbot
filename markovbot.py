@@ -72,8 +72,6 @@ async def status_check() -> None:
             bot_message += f"\n ### Hostname: {socket.gethostname()}"
         await bot_channel.send(bot_message)
 
-        gc.collect()
-
 
 @client.event
 async def on_ready() -> None:
@@ -109,7 +107,6 @@ async def on_message(message: discord.Message) -> None:
     try:
         if len(terms) > botconfig.STATE_SIZE - 1:
             await message.channel.send(f"OOC: You cannot have more than {botconfig.STATE_SIZE - 1} words after the {cmd} command. Try again!")
-            gc.collect()
 
         if isTalk:
             generated_response: str = text_model.make_sentence_with_start(
@@ -127,7 +124,6 @@ async def on_message(message: discord.Message) -> None:
         generated_response = f"OOC: I couldn't generate a message with the term '{terms_str}'. Try another term?"
 
     await message.channel.send(generated_response)
-    gc.collect()
 
 
 client.run(botconfig.TOKEN)
