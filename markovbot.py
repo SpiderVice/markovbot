@@ -30,8 +30,12 @@ def try_load_model() -> markovify.NewlineText:
         return model_manager.load_model()
 
 
+load_time_s = time.time()
 text_model: markovify.NewlineText = try_load_model()
 text_model.compile(inplace=True)  # Compile the model for faster generation
+load_time_e = time.time()
+logger.info(
+    f"Model loaded in {load_time_e - load_time_s:.4f} seconds.")
 
 
 def random_with_lookup(look_up_term: str) -> str:
